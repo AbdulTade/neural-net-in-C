@@ -24,7 +24,7 @@ struct network {
 };
 
 struct Matrix {
-    float64 *(*matData);
+    float64 **matData;
     uint32 *shape;
 };
 
@@ -36,7 +36,7 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
     struct Matrix retMat;
     retMat.shape[0] = rows;
     retMat.shape[1] = columns;
-    float64 data[mat1.shape[0]][mat2.shape[1]];
+    float64 **data = (float64 **)calloc(rows,sizeof(float64 *));
     if(isMul)
     {
         
@@ -56,12 +56,13 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
         exit(EXIT_FAILURE);
     }
     retMat.matData = data;
+    return retMat;
 }
 
 struct Matrix identity(uint32 dim)
 {
     struct Matrix obj;
-    float64 data[dim][dim];
+    float64 **data = (float64 **) calloc(dim,sizeof(float64 *));
     obj.shape[0] = dim;
     obj.shape[1] = dim;
     for(int k = 0; k < dim; k++)
@@ -85,11 +86,6 @@ int main()
 {
     struct node n1,n2,n3;
     struct node n4,n5,n6;
-    struct node n7,n8,n9;
 
-    struct layer l1,l2,l3;
-    float64 arr1 = {1,2,3,4,5};
-    n1.weights;
-    n1.bias = 0.45;
-    return 0;
+    
 }

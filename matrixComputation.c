@@ -36,6 +36,79 @@ struct Matrix {
     uint32 *shape;
 };
 
+struct Set {
+    float64 *data;
+    int32 length;
+};
+
+struct Counter {
+    float64 *data;
+    int32 *counts;
+    int32 datalen;
+};
+
+
+int comparator(void *p,void *q)
+{
+    float64 *x = (float64 *) p;
+    float64 *y = (float64 *) q;
+    if(*x > *y)
+    {
+        return -1;
+    }  else if(*x < *y)
+    {
+        return 1;
+    } 
+    
+    return 0;
+}
+
+
+
+
+struct Counter getUniqueElements(double *arr,int len)
+{
+
+    struct Counter counter;
+    int *counts = (int *) calloc(len,sizeof(double)); // initialize needed variables
+    int count = 1;
+    double *uniqueItems = (double *) calloc(len,sizeof(double));
+    int countPos = 0;
+
+    qsort(arr,len,sizeof(double),comparator); // sort elements so that counting is easy
+    double item = arr[0];
+
+    for(int k = 1; k < len ; k++)
+    {
+        if(arr[k] == item)
+        {
+            count += 1;
+        } else {
+            counts[countPos] = count;
+            uniqueItems[countPos] = item;
+            countPos += 1;
+            count = 1;
+            item = arr[k];
+        }
+    }
+    // Populate struct variables with obtained data
+    counter.data = uniqueItems;
+    counter.counts = counts;
+    counter.datalen = len;
+
+    return counter;
+}
+
+struct Set createSet(struct Vector vector)
+{
+    struct Set set;
+    int32 length = 1;
+    float64 *data = (float64 *) calloc(vector.length,sizeof(float64));
+    set.data = getUniqueElements(vector.data, vector.length).data;
+    set.length = vector.length;
+    return set;
+}
+
 struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
 {
     int32 isMul = (mat1.shape[1] == mat2.shape[0]) ? 1 : 0;
@@ -151,6 +224,7 @@ float64 mean(struct Vector vector)
 
 float64 median(struct Vector vector)
 {
+    qsort(vector.data,vector.length,sizeof(float64),comparator);
     int32 index = vector.length;
     if(vector.length%2 == 0)
     {
@@ -159,22 +233,19 @@ float64 median(struct Vector vector)
     return vector.data[(int32)(index/2)];
 }
 
-int comparator(void *p,void *q)
+float64 modulus(struct Vector vector)
 {
-    float64 *x = (float64 *) p;
-    float64 *y = (float64 *) q;
-    if(*x > *y)
+    float64 sum = 0;
+    for(int i = 0; i < vector.length; i++)
     {
-        return -1;
-    }  else if(*x < *y)
-    {
-        return 1;
-    } 
-    
-    return 0;
+        sum += pow(vector.data[i],2);
+    }
+    return sqrt(sum);
 }
+
+
 
 float64 mode(struct Vector vector)
 {
-    qsort(vector.data,vector.length,sizeof(float64),comparator);
+    
 }

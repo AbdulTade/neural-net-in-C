@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define __compare_fn_t __COMPAR_FN_T
-
 typedef int int32;
 typedef long int int64;
 typedef unsigned int uint32;
@@ -33,7 +31,7 @@ struct Vector {
 
 struct Matrix {
     float64 **matData;
-    uint32 *shape;
+    int32 *shape;
 };
 
 struct Set {
@@ -46,6 +44,15 @@ struct Counter {
     int32 *counts;
     int32 datalen;
 };
+
+void MatrixTemplate(float64 **matrix,int32 *shape)
+{
+    matrix = calloc(shape[0],sizeof(float64 *));
+    for(int i = 0; i < shape[0]; i++)
+    {
+        matrix[i] = (float64 *)calloc(shape[1],sizeof(float64));
+    }
+}
 
 
 int comparator(void *p,void *q)
@@ -64,15 +71,26 @@ int comparator(void *p,void *q)
 }
 
 
+float64 vsum(struct Vector vector)
+{
+    float64 sum = 0;
+    for(int k = 0; k < vector.length; k++)
+    {
+        sum += vector.data[k];
+    }
+    return sum;
+}
+
+
 
 
 struct Counter getUniqueElements(double *arr,int len)
 {
 
     struct Counter counter;
-    int *counts = (int *) calloc(len,sizeof(double)); // initialize needed variables
-    int count = 1;
-    double *uniqueItems = (double *) calloc(len,sizeof(double));
+    int32 *counts = (int32 *) calloc(len,sizeof(float64)); // initialize needed variables
+    float64 count = 1;
+    float64 *uniqueItems = (float64 *) calloc(len,sizeof(double));
     int countPos = 0;
 
     qsort(arr,len,sizeof(double),comparator); // sort elements so that counting is easy
@@ -117,7 +135,9 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
     struct Matrix retMat;
     retMat.shape[0] = rows;
     retMat.shape[1] = columns;
-    float64 **data = (float64 **)calloc(rows,sizeof(float64 *));
+    float64 **data;
+    int retShape[] = {rows,columns};
+    MatrixTemplate(data,retShape);
     if(isMul)
     {
         
@@ -140,10 +160,12 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
     return retMat;
 }
 
-struct Matrix identity(uint32 dim)
+struct Matrix identity(int32 dim)
 {
     struct Matrix obj;
-    float64 **data = (float64 **) calloc(dim,sizeof(float64 *));
+    float64 **data;
+    int32 shape[] = {dim,dim};
+    MatrixTemplate(data,shape);
     obj.shape[0] = dim;
     obj.shape[1] = dim;
     for(int k = 0; k < dim; k++)
@@ -244,8 +266,55 @@ float64 modulus(struct Vector vector)
 }
 
 
-
-float64 mode(struct Vector vector)
+float64 norm(struct Vector vector,double p)
 {
-    
+    if(p == 0) {return (float64)vector.length; }
+    else if(p == 1) { return vsum(vector); }
+    float64 sum = 0;
+    for(int k = 0; k < vector.length; k++)
+    {
+        sum += pow(vector.data[k],p);
+    }
+    return pow(sum,1/p);
+}
+
+void transpose(struct Matrix matrix)
+{
+    for(int i = 0; i < matrix.shape[0]; i++)
+    {
+        for(int j = 0; j < matrix.shape[1]; j++)
+        {
+            matrix.matData[j][i] = matrix.matData[i][j];
+        }
+    }
+} 
+
+void showMatrix(struct Matrix matrix)
+{
+    for(int k = 0; k < matrix.shape[0]; k++)
+    {
+        for(int j = 0; j < matrix.shape[1]; j++)
+        {
+            if(j == matrix.shape[1]-1) { printf("%f\n",matrix.matData[k][j]); }
+            printf("%f\t",matrix.matData[k][j]);
+        }
+    }
+}
+
+
+int main()
+{
+    struct Matrix matrix;
+    int32 rows = 2;
+    int32 cols = 5;
+    float64 **data;
+    int32 shape[] = {rows,cols};
+    MatrixTemplate(data,shape);
+    float64 *r1 =  {1,2,3,4,5};
+    //float64 r2[] =  {1,2,3,4,5};
+    data[0] = r1;
+    data[1] = r1;
+    struct Matrix id = identity(3);
+    showMatrix(id);
+    return 0;
 }

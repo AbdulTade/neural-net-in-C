@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <time.h>
+#include <math.h>
 
-int iscalled  = 0;
+int iscalled = 0;
 
 void CpuProfiler(clock_t *clk)
 {
@@ -20,7 +22,34 @@ void CpuProfiler(clock_t *clk)
         iscalled = 0;
         *clk = clock() - *clk;
     }
-
-
 }
 
+int sumSquares1(int n)
+{
+    return (n*((2*n) + 1)*(n + 1))/6;
+}
+
+int sumSquares2(int n)
+{
+    int sum = 0;
+    for(int i = 1; i <= n; i++)
+    {
+        sum += (int) pow(i,2);
+    }
+    return sum;
+}
+
+int main()
+{
+
+    clock_t c,ck;
+    CpuProfiler(&c);
+    sumSquares1(20000);
+    CpuProfiler(&c);
+
+    CpuProfiler(&ck);
+    sumSquares2(20000);
+    CpuProfiler(&ck);
+
+    printf("Clock ticks for sumSquare1 is  %ld and that for sumSquares2 is %ld",c,ck);
+}

@@ -1,7 +1,10 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+
+int iscalled = 0;
 struct Counter {
     double *data;
     int *counts;
@@ -13,6 +16,19 @@ struct Polynomial {
     char var;
     int length;
 };
+
+struct Fraction {
+    long int num;
+    long int den;
+    long int whole;
+};
+
+// struct cputime_t {
+
+//     clock_t clk;
+//     unsigned long long overflows;
+
+// };
 
 int comparator(void *,void *);
 struct Counter getUniqueElements(double *,int );
@@ -109,5 +125,53 @@ void DispPoly(struct Polynomial polynomial)
         }
     }
     printf("%s",string);
+}
+
+// char *strAdd(char *val1,char *val2,int len1,int len2)
+// {
+//     int carry = 0;
+//     int len = (len1 >= len2 ) ? len2 : len1;
+//     int biglen = (len1 >= len2) ? len1 : len2;
+//     char *strSum = (char *) malloc(len * sizeof(char));
+//     for(int  i = len-1; i >= 0; i--)
+//     {
+//         int c1 = val1[i] + val2[i] + carry;
+//         if(c1 >= 106)
+//         {
+//             carry = 1;
+//         } else { carry = 0; }
+//         // if(i == 0)
+//         // {
+//         //     strSum[] = (char) ( 48 +  ((c1%48)%10) );
+//         // } else {
+        
+//         strSum[i] = (char) ( 48 +  ((c1%48)%10) );
+
+//         //}
+//     }
+// }   
+ 
+// char *timeStr(struct cputime_t cputime)
+// {
+//     char * str = (char *) malloc(21 * cputime.overflows * sizeof(char));
+
+// }
+
+void CpuProfiler(clock_t *clk)
+{
+    /*
+    It takes a pointer to a variable of type clock_t. It then stores the current cpuCount into this variable. A second call passing back the value
+    of the pointer to the function subtracts the previous cpu count from then current clock count into this variable and stores it back into the passed value;
+    The problem with this method is that the clock count for the cpu is independent of whether your process is executing or not. Due to interrupts your process can be removed from the running state 
+    a context switch to higher priority process or i/o process, therefore measured clock counts might not accurately depict the running time for your functions.
+    */   
+    if(!iscalled)
+    {
+        iscalled = 1;
+        *clk = clock();
+    } else {
+        iscalled = 0;
+        *clk = clock() - *clk;
+    }
 }
 

@@ -14,7 +14,9 @@ extern struct Matrix {
     int32 *shape;
 };
 extern float64 **MatrixTemplate(int32 *shape);
-extern void transpose(struct Matrix matrix);
+extern struct Matrix transpose(struct Matrix matrix);
 extern struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2);
 extern struct Matrix identity(int32 dim);
 extern void showMatrix(struct Matrix matrix);
+extern int32 isSymmetric(struct Matrix matrix);
+extern int32 trace(struct Matrix matrix);

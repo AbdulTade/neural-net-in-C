@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mathUtils.h"
+#include "Vector.h"
 
 typedef int int32;
 typedef long int int64;
@@ -25,15 +26,21 @@ float64 **MatrixTemplate(int32 *shape)
     return matrix;
 }
 
-void transpose(struct Matrix matrix)
-{
+struct Matrix transpose(struct Matrix matrix)
+{ 
+    static struct Matrix retMat;
+    retMat.shape = (int32 *) calloc(2,sizeof(int32));
+    retMat.shape[0] = matrix.shape[1];
+    retMat.shape[1] = matrix.shape[0];
+    retMat.matData = MatrixTemplate(retMat.shape);
     for(int i = 0; i < matrix.shape[0]; i++)
     {
         for(int j = 0; j < matrix.shape[1]; j++)
         {
-            matrix.matData[j][i] = matrix.matData[i][j];
+            retMat.matData[j][i] = matrix.matData[i][j];
         }
     }
+    return retMat;
 } 
 
 struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
@@ -46,7 +53,7 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
     retMat.shape[1] = columns;
     retMat.shape = (int32 *) calloc(2,sizeof(int32));
     int retShape[] = {rows,columns};
-    float64 **data = MatrixTemplate(retShape);
+    retMat.matData = MatrixTemplate(retShape);
     if(isMul)
     {
         
@@ -56,7 +63,7 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
             {
                 for(int k = 0; k < mat1.shape[1]; k++)
                 {
-                    data[i][j] += mat1.matData[i][k] * mat2.matData[k][j];
+                    retMat.matData[i][j] += mat1.matData[i][k] * mat2.matData[k][j];
                 }
             }
         }
@@ -65,7 +72,6 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
         perror("Cannot multiply two matrices of unequal dimensions\n");
         exit(EXIT_FAILURE);
     }
-    retMat.matData = data;
     return retMat;
 }
 
@@ -94,6 +100,44 @@ struct Matrix identity(int32 dim)
     return obj;
 }
 
+
+int32 isSymmetric(struct Matrix matrix)
+{
+    int isSquare = (matrix.shape[0] == matrix.shape[1]) ? 1 : 0;
+    if(!isSquare) {
+        perror("Symmetric matrix cannot be rectangular");
+        exit(0);
+    }
+    for(int i = 0; i < matrix.shape[0]; i++)
+    {
+        for(int j = 0; j < matrix.shape[1]; j++)
+        {
+            if(matrix.matData[i][j] != matrix.matData[j][i])
+            {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+int32 trace(struct Matrix matrix)
+{
+    int32 sum = 0;
+    if(matrix.shape[0] != matrix.shape[1])
+    {
+        perror("Trace undefined for rectangular matrices");
+        exit(-1);
+    }
+    for(int i = 0; i < matrix.shape[0]; i++)
+    {
+        sum += matrix.matData[i][i];
+    }
+
+    return sum;
+}
+
+
 void showMatrix(struct Matrix matrix)
 {
     for(int k = 0; k < matrix.shape[0]; k++)
@@ -103,5 +147,28 @@ void showMatrix(struct Matrix matrix)
             if(j == matrix.shape[1]-1) { printf("%f\n",matrix.matData[k][j]); continue;}
             printf("%f\t",matrix.matData[k][j]);
         }
+    }
+}
+
+struct Matrix slice(struct Matrix matrix,int32 *rowRange,int32 *colRange)
+{
+    struct Matrix retMat;
+    int32 rows = (rowRange[1]-rowRange[0]+1);
+    int32 cols = (colRange[1]-colRange[0]+1);
+    int32 shape[] = {rows,cols};
+    retMat.shape = (int32 *) calloc(2,sizeof(int32));
+    retMat.shape = shape;
+    retMat.matData = MatrixTemplate(shape);
+    int32 rowState = (rowRange[0] >= 0 && rowRange[1] < matrix.shape[0]) ? 1 : 0;
+    int32 colState = (colRange[0] >= 0 && colRange[1] < matrix.shape[1]) ? 1 : 0;
+    if(rowState && colState)
+    {
+            for(int i = rowRange[0]; i <= rowRange[1]; i++)
+            {
+                for(int j = colRange[0]; j <= colRange[1]; j++)
+                {
+                    
+                }
+            }
     }
 }

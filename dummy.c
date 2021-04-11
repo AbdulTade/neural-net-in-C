@@ -44,7 +44,7 @@ int main()
 
     clock_t c,ck;
     CpuProfiler(&c);
-    sumSquares1(20000);
+    printf("sum1 = %d",sumSquares1(20000));
     CpuProfiler(&c);
 
     CpuProfiler(&ck);

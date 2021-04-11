@@ -167,8 +167,12 @@ struct Matrix slice(struct Matrix matrix,int32 *rowRange,int32 *colRange)
             {
                 for(int j = colRange[0]; j <= colRange[1]; j++)
                 {
-                    
+                    retMat.matData[i-rowRange[0]][j-colRange[0]] = matrix.matData[i][j];
                 }
             }
+    } else {
+        perror("Cannot slice range exceeds matrix dimensions");
+        exit(-1);
     }
+    return retMat;
 }

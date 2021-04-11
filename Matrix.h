@@ -20,3 +20,4 @@ extern struct Matrix identity(int32 dim);
 extern void showMatrix(struct Matrix matrix);
 extern int32 isSymmetric(struct Matrix matrix);
 extern int32 trace(struct Matrix matrix);
+extern struct Matrix slice(struct Matrix matrix,int32 *rowRange,int32 *colRange);

@@ -48,6 +48,9 @@ int main()
     printf("\n");
     if(isSymmetric(matrix)) {printf("Yes it is");}
     showMatrix(matrix);
+    int32 rrange[] = {0,1};
+    int32 crange[] = {0,1};
+    showMatrix(slice(matrix,))
     CpuProfiler(&clk);
     printf("It took %ld clock ticks to run the file ",clk);
     return 0;

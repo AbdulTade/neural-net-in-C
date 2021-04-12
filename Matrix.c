@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+//#include <math.h>
+#include <time.h>
 #include "mathUtils.h"
 #include "Vector.h"
+
 
 typedef int int32;
 typedef long int int64;
@@ -26,12 +29,17 @@ float64 **MatrixTemplate(int32 *shape)
     return matrix;
 }
 
+void setShape(struct Matrix *matrix,int32 rows,int32 cols)
+{
+    matrix -> shape = (int32 *) calloc(2,sizeof(int32));
+    matrix -> shape[0] = rows;
+    matrix -> shape[1] = cols;
+}
+
 struct Matrix transpose(struct Matrix matrix)
 { 
     static struct Matrix retMat;
-    retMat.shape = (int32 *) calloc(2,sizeof(int32));
-    retMat.shape[0] = matrix.shape[1];
-    retMat.shape[1] = matrix.shape[0];
+    setShape(&retMat, matrix.shape[0], matrix.shape[1]);
     retMat.matData = MatrixTemplate(retMat.shape);
     for(int i = 0; i < matrix.shape[0]; i++)
     {
@@ -49,9 +57,7 @@ struct Matrix mProduct(struct Matrix mat1,struct Matrix mat2)
     int32 rows = mat1.shape[0];
     int32 columns = mat2.shape[1];
     struct Matrix retMat;
-    retMat.shape[0] = rows;
-    retMat.shape[1] = columns;
-    retMat.shape = (int32 *) calloc(2,sizeof(int32));
+    setShape(&retMat,rows,columns);
     int retShape[] = {rows,columns};
     retMat.matData = MatrixTemplate(retShape);
     if(isMul)
@@ -121,7 +127,7 @@ int32 isSymmetric(struct Matrix matrix)
     return 1;
 }
 
-int32 trace(struct Matrix matrix)
+float64 trace(struct Matrix matrix)
 {
     int32 sum = 0;
     if(matrix.shape[0] != matrix.shape[1])
@@ -145,7 +151,7 @@ void showMatrix(struct Matrix matrix)
         for(int j = 0; j < matrix.shape[1]; j++)
         {
             if(j == matrix.shape[1]-1) { printf("%f\n",matrix.matData[k][j]); continue;}
-            printf("%f\t",matrix.matData[k][j]);
+            printf("%f  ",matrix.matData[k][j]);
         }
     }
 }
@@ -176,3 +182,23 @@ struct Matrix slice(struct Matrix matrix,int32 *rowRange,int32 *colRange)
     }
     return retMat;
 }
+
+struct Matrix randMatrix(int32 *shape)
+{
+    srand(time(0));
+    struct Matrix matrix;
+    setShape(&matrix, shape[0], shape[1]);
+    matrix.matData = MatrixTemplate(shape);
+    
+    for(int i = 0; i < shape[0]; i++)
+    {
+        for(int j = 0; j < shape[1]; j++)
+        {
+            matrix.matData[i][j] = (float64) ((float64)rand()/RAND_MAX);
+        }
+    }
+    return matrix;
+}
+
+
+

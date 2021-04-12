@@ -21,3 +21,5 @@ extern void showMatrix(struct Matrix matrix);
 extern int32 isSymmetric(struct Matrix matrix);
 extern int32 trace(struct Matrix matrix);
 extern struct Matrix slice(struct Matrix matrix,int32 *rowRange,int32 *colRange);
+extern void setShape(struct Matrix *matrix,int32 rows,int32 cols);
+extern struct Matrix randMatrix(int32 *shape);

@@ -32,27 +32,28 @@ int main()
     CpuProfiler(&clk);
     struct Matrix matrix;
     int32 rows = 2;
-    int32 cols = 5;
+    int32 cols = 2;
     int32 shape[] = {rows,cols};
-    float64 r1[] =  {1,2,3,4,5};
-    matrix.shape = (int32 *) calloc(2,sizeof(int32));
-    matrix.shape[0] = rows;
-    matrix.shape[1] = cols; 
+    float64 r1[] =  {1,2,};
+    float64 r2[] =  {9,16};
+    setShape(&matrix,rows,cols);
     //float64 r2[] =  {1,2,3,4,5};
     matrix.matData = MatrixTemplate(shape);
     matrix.matData[0] = r1;
-    matrix.matData[1] = r1;
-    struct Matrix id = identity(10);
+    matrix.matData[1] = r2;
+    struct Matrix id = identity(2);
     struct Matrix retMat = transpose(matrix);
     showMatrix(retMat);
     printf("\n");
-    if(isSymmetric(matrix)) {printf("Yes it is");}
+    //if(isSymmetric(matrix)) {printf("Yes it is");}
     showMatrix(matrix);
+    printf("\n");
     int32 rrange[] = {0,1};
-    int32 crange[] = {0,1};
-    showMatrix(slice(matrix,))
+    int32 crange[] = {3,4};
+    showMatrix(randMatrix(crange));
+    printf("Trace is %d",trace(matrix));
+    printf("\n");
     CpuProfiler(&clk);
     printf("It took %ld clock ticks to run the file ",clk);
     return 0;
-
 }

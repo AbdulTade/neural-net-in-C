@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Matrix.h"
 
 int iscalled  = 0;
+struct ReleaseMemory {
+    struct Matrix *matrix;
+    int len;
+};
 
 void CpuProfiler(clock_t *clk)
 {
@@ -22,5 +27,20 @@ void CpuProfiler(clock_t *clk)
     }
 
 
+}
+
+void cleanUp(struct ReleaseMemory memStruct)
+{
+    int32 rows = memStruct.matrix -> shape[0];
+    //int32 cols = memStruct.matrix -> shape[1];
+    for(int k = 0; k < memStruct.len; k++)
+    {
+        for(int i = 0; i < rows; i++)
+        {
+            free(memStruct.matrix -> matData[i]);
+        }
+        free(memStruct.matrix -> shape);
+        free(memStruct.matrix -> matData);
+    }
 }
 

@@ -119,10 +119,10 @@ void Activators(struct Matrix *matrix,struct Matrix *retMat,char *opt)
     funcs[6] = &Gaussian;
 
     char *options[] =  {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
-    size_t max = strlen(opt);
+    size_t min = 0;
     for(int i = 0; i < 7; i++)
-    {
-        if(!strncmp(opt,options[i],max))
+    {   min = strlen(options[i]);
+        if(!strncmp(opt,options[i],min))
         {
             funcs[i](matrix,retMat);
             break;

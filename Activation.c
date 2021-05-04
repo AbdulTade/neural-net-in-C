@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Matrix.h"
 
 typedef void (*func)(struct Matrix *, struct Matrix *);
@@ -104,9 +105,9 @@ void Gaussian(struct Matrix *matrix,struct Matrix *retMat)
     }
 }
 
-
-void (*func)(struct Matrix *,struct Matrix *) intOpt(char *opt)
+void Activators(struct Matrix *matrix,struct Matrix *retMat,char *opt)
 {
+
     func *funcs;
     funcs = calloc(7,sizeof(func));
     funcs[0] = &binStep;
@@ -118,18 +119,19 @@ void (*func)(struct Matrix *,struct Matrix *) intOpt(char *opt)
     funcs[6] = &Gaussian;
 
     char *options[] =  {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
+    size_t max = strlen(opt);
     for(int i = 0; i < 7; i++)
     {
-        if(*opt == options[i])
+        if(!strncmp(opt,options[i],max))
         {
-            return funcs[i];
+            funcs[i](matrix,retMat);
+            break;
         }
     }
     char *msg = "string arg unrecognized";
     char optArr[256];
     snprintf(optArr,256,"%s\nValid options %s %s %s %s %s %s",msg,options[0],options[1],options[2],options[3],options[4],options[5]);
     perror(optArr);char *options[7] = {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
-    return -1;
 }
 
 // struct Matrix Activators(struct Matrix matrix,char *type,float64 alpha)

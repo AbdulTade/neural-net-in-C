@@ -2,40 +2,182 @@
 #include <stdlib.h>
 #include "Matrix.h"
 
-struct Matrix BinaryStep(struct Matrix matrix)
-{
-    struct Matrix retMat;
-    retMat.matData = MatrixTemplate(matrix.shape);
-    retMat.shape = matrix.shape;
-    
-    for (int i = 0; i < matrix.shape[0]; i++)
-    {
-        for (int j = 0; j < matrix.shape[1]; j++)
-        {
-            
-            retMat.matData[i][j] = (matrix.matData[i][j] > 0 ) ? 1 : 0;
+typedef void (*func)(struct Matrix *, struct Matrix *);
 
+char *options[7] = {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
+
+void binStep(struct Matrix *matrix,struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            matrix -> matData[i][j] = (x > 0 ) ? 1 : 0;
         }
         
     }
-    
-    return retMat;
 }
 
-struct Matrix Sigmoid(struct Matrix matrix)
+void sigmoid(struct Matrix *matrix,struct Matrix *retMat)
 {
-    struct Matrix retMat;
-    retMat.matData = MatrixTemplate(matrix.shape);
-    retMat.shape = matrix.shape;
-    for (int i = 0; i < matrix.shape[0]; i++)
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
     {
-        for (int j = 0; j < matrix.shape[1]; j++)
+        for (int j = 0; j < matrix -> shape[1]; j++)
         {
-            
-            retMat.matData[i][j] = 1 / (1 + exp(-matrix.matData[i][j]));
-
+            x = matrix -> matData[i][j];
+            retMat -> matData[i][j] = 1 / (1 + exp(-x));
         }
         
     }
-    return retMat;
 }
+
+void ActTanh(struct Matrix *matrix,struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            retMat -> matData[i][j] = (1 - exp(-2*x)) / (1 + exp(-2*x));
+        }
+        
+    }
+}
+
+void ReLU(struct Matrix *matrix,struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            matrix -> matData[i][j] = (x > 0) ? x : 0;
+        }
+        
+    }
+}
+
+void Softplus(struct Matrix *matrix,struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            matrix -> matData[i][j] = log(1 + exp(x));
+        }
+        
+    }
+}
+
+void LeakyReLU(struct Matrix *matrix, struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            matrix -> matData[i][j] = (x > 0) ? x : 0.01*x;
+        }
+        
+    }
+}
+
+void Gaussian(struct Matrix *matrix,struct Matrix *retMat)
+{
+    float64 x = 0;
+    for (int i = 0; i < matrix -> shape[0]; i++)
+    {
+        for (int j = 0; j < matrix -> shape[1]; j++)
+        {
+            x = matrix -> matData[i][j];
+            matrix -> matData[i][j] = exp(-x);
+        }
+        
+    }
+}
+
+
+void (*func)(struct Matrix *,struct Matrix *) intOpt(char *opt)
+{
+    func *funcs;
+    funcs = calloc(7,sizeof(func));
+    funcs[0] = &binStep;
+    funcs[1] = &sigmoid;
+    funcs[2] = &tanh;
+    funcs[3] = &ReLU;
+    funcs[4] = &Softplus;
+    funcs[5] = &LeakyReLU;
+    funcs[6] = &Gaussian;
+
+    char *options[] =  {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
+    for(int i = 0; i < 7; i++)
+    {
+        if(*opt == options[i])
+        {
+            return funcs[i];
+        }
+    }
+    char *msg = "string arg unrecognized";
+    char optArr[256];
+    snprintf(optArr,256,"%s\nValid options %s %s %s %s %s %s",msg,options[0],options[1],options[2],options[3],options[4],options[5]);
+    perror(optArr);char *options[7] = {"binaryStep","sigmoid","tanh","ReLU","Softplus","LeakyReLU","Gaussian"};
+    return -1;
+}
+
+// struct Matrix Activators(struct Matrix matrix,char *type,float64 alpha)
+// {
+//     struct Matrix retMat;
+//     retMat.matData = MatrixTemplate(matrix.shape);
+//     retMat.shape = matrix.shape;
+//     float64 x = 0;
+    
+//     for (int i = 0; i < matrix.shape[0]; i++)
+//     {
+//         for (int j = 0; j < matrix.shape[1]; j++)
+//         {
+//             x = matrix.matData[i][j];
+//             /*
+//             Remove switch statement to reduce inefficiencies due to
+//             checking switch for every iteration.
+//             */
+//             switch(intOpt(type))
+//             {
+//                 case 0:
+//                     retMat.matData[i][j] = (x > 0 ) ? 1 : 0;
+//                     break;
+//                 case 1:
+//                     retMat.matData[i][j] = 1 / (1 + exp(-x));
+//                     break;
+//                 case 2:
+//                     retMat.matData[i][j] = (1 - exp(-2*x))/(1 + exp(-2*x));
+//                     break;
+//                 case 3:
+//                     retMat.matData[i][j] = (x > 0) ? x : 0;
+//                     break;
+//                 case 4:
+//                     retMat.matData[i][j] = log(1 + exp(x));
+//                     break;
+//                 case 5:
+//                     retMat.matData[i][j] = (x > 0) ? x : 0.01*x;
+//                     break;
+//                 case 6:
+//                     retMat.matData[i][j] = exp(-x*x);
+//                 default:
+//                     break;
+//             }
+
+//         }
+        
+//     }
+    
+//     return retMat;
+// }
+

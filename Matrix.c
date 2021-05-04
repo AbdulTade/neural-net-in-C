@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <math.h>
 #include <time.h>
+#include <math.h>
 #include "mathUtils.h"
 #include "Vector.h"
 
@@ -200,5 +200,18 @@ struct Matrix randMatrix(int32 *shape)
     return matrix;
 }
 
+float64 mNorm(struct Matrix matrix)
+{
+    float64 sum = 0;
+    for(int i = 0; i < matrix.shape[0]; i++)
+    {
+        for (int j = 0; j < matrix.shape[1]; j++)
+        {
 
+            sum += matrix.matData[i][j] * matrix.matData[i][j];
 
+        }
+        
+    }
+    return sqrt(sum);
+}
